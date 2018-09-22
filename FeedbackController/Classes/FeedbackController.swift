@@ -32,8 +32,9 @@ import UIKit
 /// - impact: Use this type to indicate that an impact occured. Use it for example, when UI elements collide or snap into place. It can vary between ```light```, ```medium``` and ```heavy```.
 /// - selection: Use this type to indicate selection between different values. Those can be numeric or other discrete values like a switch.
 /// - notification: Use this type to indicate that a task has succeded or failed. It can also be used to display a warning to the user. Usually, it uses a more complex haptics than the other types.
+@available(iOS 10.0, *)
 public enum TapticFeedbackType {
-    case impact(style: UIImpactFeedbackStyle), selection, notification
+    case impact(style: UIImpactFeedbackGenerator.FeedbackStyle), selection, notification
 }
 
 @available(iOS 10.0, *)
@@ -88,7 +89,7 @@ final public class FeedbackController: NSObject {
     ///
     /// ```FeedbackController.prepare(for:)``` should be called prior to this method. Otherwise the Taptic Engine is not prepared for the feedback which can lead to delays. Avoid delays when the feedback is sycronized with UI events or sound by calling ```FeedbackController.prepare(for:)``` first.
     /// - Parameter notificationType: The type of the notification.
-    public func notificationOccured(_ notificationType: UINotificationFeedbackType) {
+    public func notificationOccured(_ notificationType: UINotificationFeedbackGenerator.FeedbackType) {
         if feedbackGenerator == nil || (feedbackGenerator is UINotificationFeedbackGenerator) == false {
             prepare(for: .notification)
             print("You should prepare before starting a feedback action! I will do it for you.")
@@ -158,10 +159,9 @@ public extension UIViewController {
     /// Impact type must be configured here (```.light```, ```.medium```, ```.heavy```), whereas the type of a notification needs to be set when the notification should be displayed.
     ///
     /// - Parameter type: The type for which the FeedbackController should prepare the Taptic Engine to.
+    @available(iOS 10.0, *)
     public func prepareFeedback(for type: TapticFeedbackType) {
-        if #available(iOS 10.0, *), UIDevice.isTapticEngineSupported {
             FeedbackController.shared.prepare(for: type)
-        }
     }
     
     /// This method performs haptic feedback. Can be used when the reminder or participate button is pressed. If the hardware and iOS version support it, the feedback is performed.
@@ -194,7 +194,8 @@ public extension UIViewController {
     /// However, it does not prepare the engine. Please call ````UIViewController.prepareFeedback(for:)``` prior to the actual haptic feedback in order to improve the timing.
     ///
     /// - Parameter type: The type of notification. Use this parameter to control the style of the taptic feedback, for example if you want to present an error or warning message.
-    public func hapticFeedbackNotificationOccured(with type: UINotificationFeedbackType) {
+    @available(iOS 10.0, *)
+    public func hapticFeedbackNotificationOccured(with type: UINotificationFeedbackGenerator.FeedbackType) {
         if #available(iOS 10.0, *) {
             if UIDevice.isTapticEngineSupported {
                 FeedbackController.shared.notificationOccured(type)
